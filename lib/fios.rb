@@ -5,6 +5,8 @@ require "active_support/concern"
 require "rails"
 
 require_relative "fios/adapters/base"
+require_relative "fios/adapters/active_record/chart_query"
+require_relative "fios/adapters/active_record/report_query"
 require_relative "fios/adapters/active_record_adapter"
 require_relative "fios/adapters/registry"
 require_relative "fios/builders/chart_builder"

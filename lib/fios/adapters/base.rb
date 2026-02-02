@@ -3,16 +3,18 @@ module Fios
     module Base
       extend ActiveSupport::Concern
 
-      attr_accessor :dataset, :definition
-
       class_methods do
         def adapter_key
           raise NotImplementedError
         end
-      end
 
-      def fetch(filters:, limit:)
-        raise NotImplementedError
+        def fetch_chart_data(data_source, chart)
+          raise NotImplementedError
+        end
+
+        def fetch_report_data(data_source, report)
+          raise NotImplementedError
+        end
       end
     end
   end
