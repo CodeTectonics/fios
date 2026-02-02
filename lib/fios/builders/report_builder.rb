@@ -11,18 +11,18 @@ module Fios
         Fios::Services::DatasetFetcher.fetch_report_data(dataset, report)
       end
 
-      def self.build_csv(dynamic_report)
+      def self.build_csv(report)
         {
-          headers: csv_headers(dynamic_report),
-          rows: fetch_data(dynamic_report)
+          headers: csv_headers(report),
+          rows: fetch_data(report)
         }
       end
 
-      def self.csv_headers(dynamic_report)
-        report_config = dynamic_report.configuration || {}
+      def self.csv_headers(report)
+        report_config = report.configuration || {}
 
         dataset = Dataset.find(report_config['dataset_id'])
-        dataset_class = Fios::Services::DatasetFetcher.fetch(dataset)
+        dataset_class = Fios::Services::DatasetFetcher.fetch_report_data(dataset, report)
 
         return dataset_class.column_names if report_config['columns'].blank?
 
