@@ -79,7 +79,7 @@ Creates:
 * Dataset model
 * Migration
 
-### 3. Generate a Dataset Definition
+### 3. Generate a Data Source
 ```
 bin/rails generate fios:data_source EmployeeReport
 ```
@@ -89,7 +89,7 @@ This creates:
 ```
 # app/datasets/employee_report.rb
 class EmployeeReport
-  include Fios::Definitions::Base
+  include Fios::DataSources::Base
 
   def self.dataset_key
     :employee_report
@@ -115,14 +115,14 @@ Dataset.create!(
 )
 ```
 
-### 2. Dataset Definition
+### 2. Data Source
 
 Define where the data comes from:
 
 ```
 # app/datasets/employee_report.rb
 class EmployeeReport
-  include Fios::Definitions::Base
+  include Fios::DataSources::Base
 
   def self.dataset_key
     :employee_report
@@ -134,18 +134,18 @@ class EmployeeReport
 end
 ```
 
-This definition does not need to be an ActiveRecord model.
+This data source does not need to be an ActiveRecord model.
 
-### 3. Register the Dataset Definition and Adapter
+### 3. Register the Data Source and Adapter
 
-Register your Dataset Definition:
+Register your Data Source:
 
 ```
 # config/initializers/fios.rb
 Rails.application.config.to_prepare do
   Fios::Registrar.register do
     adapter Fios::Adapters::ActiveRecordAdapter
-    dataset EmployeeReport
+    data_source EmployeeReport
   end
 end
 ```
@@ -220,21 +220,21 @@ t.string :adapter
 ```
 
 Responsibilities:
-* Identifies the Dataset Definition via slug.
+* Identifies the Data Source via slug.
 * Declares which adapter should be used.
 * Acts as the stable reference point for Charts and Reports.
 * A Dataset must always exist in the database.
 
-### Dataset Definitions
+### Data Sources
 
-A Dataset Definition is a Ruby class that represents where data comes from.
+A Data Source is a Ruby class that represents where data comes from.
 * May be an ActiveRecord model, a database view, or a plain Ruby class
 * Must define a dataset_key
 * Is looked up using Dataset.slug
 
 ```
 class EmployeeReport
-  include Fios::Definitions::Base
+  include Fios::DataSources::Base
 
   def self.dataset_key
     :employee_report
@@ -242,13 +242,13 @@ class EmployeeReport
 end
 ```
 
-Each Dataset Definition has exactly one corresponding Dataset record.
+Each Data Source has exactly one corresponding Dataset record.
 
-Instantiation of Dataset Definitions (if any) is controlled entirely by the Adapter.
+Instantiation of Data Sources (if any) is controlled entirely by the Adapter.
 
 ### Adapters
 
-Adapters define how data is fetched and shaped from a Dataset Definition.
+Adapters define how data is fetched and shaped from a Data Source.
 
 Examples:
 * ActiveRecord
@@ -264,11 +264,11 @@ class ActiveRecordAdapter
     :active_record
   end
 
-  def self.fetch_chart_data(dataset_definition, report)
+  def self.fetch_chart_data(data_source, report)
     # returns chart-ready data
   end
 
-  def self.fetch_report_data(dataset_definition, report)
+  def self.fetch_report_data(data_source, report)
     # returns tabular data
   end
 end
@@ -299,7 +299,7 @@ Reports:
 Fios uses registries instead of global constants.
 
 ```
-Fios::Definitions::Registry.definitions
+Fios::DataSources::Registry.data_sources
 # => { employee_report: EmployeeReport }
 
 Fios::Adapters::Registry.adapters
@@ -321,7 +321,7 @@ All Datasets and Adapters are registered explicitly:
 Rails.application.config.to_prepare do
   Fios::Registrar.register do
     adapter Fios::Adapters::ActiveRecordAdapter
-    dataset EmployeeReport
+    data_source EmployeeReport
   end
 end
 ```
@@ -339,7 +339,7 @@ No eager loading required.
 Fios is built around a few guiding principles:
 * Analytics logic should live outside controllers
 * Datasets should be explicit and persisted
-* Definitions describe where data comes from
+* Data Sources describe where data comes from
 * Adapters describe how data is fetched
 * Registration should be opt-in and predictable
 * Frameworks should clarify behavior, not hide it
@@ -369,7 +369,7 @@ Instead of hiding complexity, Fios makes analytics code:
 
 Fios separates analytics into clear responsibilities:
 * Datasets describe what data exists (persisted metadata)
-* Dataset Definitions describe where data comes from
+* Data Sources describe where data comes from
 * Adapters describe how data is fetched and shaped
 * Charts and Reports describe how data is queried and presented
 

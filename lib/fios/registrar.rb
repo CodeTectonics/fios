@@ -4,8 +4,8 @@ module Fios
       instance_eval(&block)
     end
 
-    def self.dataset(klass)
-      Fios::Definitions::Registry.register(klass)
+    def self.data_source(klass)
+      Fios::DataSources::Registry.register(klass)
     end
 
     def self.adapter(klass)

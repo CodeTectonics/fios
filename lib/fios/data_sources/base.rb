@@ -1,5 +1,5 @@
 module Fios
-  module Definitions
+  module DataSources
     module Base
       extend ActiveSupport::Concern
 
