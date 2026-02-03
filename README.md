@@ -204,7 +204,7 @@ Benefits:
 * Predictable behavior
 * No implicit class loading
 
-## Initializer
+### Initializer
 
 All Datasets and Adapters are registered explicitly:
 
@@ -234,6 +234,62 @@ Fios is built around a few guiding principles:
 * Adapters describe how data is fetched
 * Registration should be opt-in and predictable
 * Frameworks should clarify behavior, not hide it
+
+## Why Fios Exists
+
+Analytics code in Rails applications often grows organically:
+* Queries live in controllers or services
+* Charts embed SQL or ActiveRecord logic
+* Reports duplicate filtering and aggregation logic
+* Business rules become scattered and hard to reason about
+
+Over time, analytics becomes:
+* difficult to test
+* difficult to extend
+* risky to change
+
+Fios exists to solve this problem by making analytics a first-class concern.
+
+Instead of hiding complexity, Fios makes analytics code:
+* explicit
+* structured
+* inspectable
+
+### What Fios Does Differently
+
+Fios separates analytics into clear responsibilities:
+* Datasets describe what data exists (persisted metadata)
+* Dataset Definitions describe where data comes from
+* Adapters describe how data is fetched and shaped
+* Charts and Reports describe how data is queried and presented
+
+This separation:
+* avoids tight coupling to ActiveRecord
+* supports multiple data sources
+* keeps analytics logic out of controllers
+* encourages reuse instead of duplication
+
+### Who Fios Is For
+
+Fios is designed for teams that:
+* build internal tools or data-heavy applications
+* need dashboards and reports backed by real business logic
+* care about maintainability more than “quick charts”
+* want analytics code that survives beyond the first version
+
+Fios is not a BI tool, a charting library, or a UI framework.
+
+It is the analytics layer that sits between your application data and whatever frontend or visualization tool you choose.
+
+### Philosophy
+
+Fios is built on a few core beliefs:
+* Analytics deserves the same structure as the rest of your application
+* Explicit registration is better than magic loading
+* Query logic should be testable Ruby code
+* Frameworks should help you understand your system, not obscure it
+
+If your analytics logic is becoming hard to reason about, Fios gives it a home.
 
 ## License
 
