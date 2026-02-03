@@ -7,13 +7,13 @@ It provides a structured, explicit way to define datasets, adapters, charts, rep
 
 ## Features
 
-📊 Persisted datasets with explicit metadata
-🔌 Adapters to control how data is fetched (ActiveRecord, SQL, APIs, etc.)
-📈 Chart builders for producing chart-ready data
-📑 Report builders for producing tabular data
-🧠 Registry-based architecture (no magic constants)
-⚙️ Rails generators to get started quickly
-♻️ Works with or without ActiveRecord models
+- 📊 Persisted datasets with explicit metadata
+- 🔌 Adapters to control how data is fetched (ActiveRecord, SQL, APIs, etc.)
+- 📈 Chart builders for producing chart-ready data
+- 📑 Report builders for producing tabular data
+- 🧠 Registry-based architecture (no magic constants)
+- ⚙️ Rails generators to get started quickly
+- ♻️ Works with or without ActiveRecord models
 
 
 ## Installation
@@ -97,6 +97,114 @@ class EmployeeReport
 end
 ```
 
+
+## Minimal End-to-End Example
+
+This example shows the complete flow from a persisted Dataset to chart-ready data.
+
+### 1. Dataset Record
+
+Create a Dataset record:
+
+```
+Dataset.create!(
+  slug: "employee_report",
+  name: "Employee Report",
+  description: "Employees grouped by department",
+  adapter: "active_record"
+)
+```
+
+### 2. Dataset Definition
+
+Define where the data comes from:
+
+```
+# app/datasets/employee_report.rb
+class EmployeeReport
+  include Fios::Definitions::Base
+
+  def self.dataset_key
+    :employee_report
+  end
+
+  def self.all
+    Employee.all
+  end
+end
+```
+
+This definition does not need to be an ActiveRecord model.
+
+### 3. Register the Dataset Definition and Adapter
+
+Register your Dataset Definition:
+
+```
+# config/initializers/fios.rb
+Rails.application.config.to_prepare do
+  Fios::Registrar.register do
+    adapter Fios::Adapters::ActiveRecordAdapter
+    dataset EmployeeReport
+  end
+end
+```
+
+### 4. Create a Chart
+
+```
+chart = Chart.create!(
+  name: "Employees by Department",
+  configuration: {
+    dataset_id: Dataset.find_by!(slug: "employee_report").id,
+    chart_type: "column",
+    x_axis: { attr: "department", label: "Department" },
+    y_axes: [
+      { attr: "id", label: "Employees", type: "string", aggregation: "count" }
+    ],
+    filters: [
+      { attr: "job", type: "string", operator: "=", value: "Clerk" }
+    ]
+  }
+)
+```
+
+### 5. Fetch Chart Data
+
+ChartBuilder.build returns a frontend-agnostic hash shaped for charting libraries.
+
+```
+data = Fios::Builders::ChartBuilder.build(chart)
+```
+
+Result:
+```
+{
+  'chart': {
+    'type': 'column'
+  },
+
+  'title': {
+    'text': 'Employees by Department'
+  },
+
+  'xAxis': {
+    'categories': ['Engineering', 'Sales', 'HR']
+  },
+
+  'yAxis': {
+    'title': {
+      'text': nil
+    }
+  },
+
+  'series': [{ name: "Employees", data: [12, 8, 5] }]
+}
+```
+
+This data can be passed directly to a frontend charting library such as Highcharts.
+
+
 ## Core Concepts
 
 ### Dataset (Persisted)
@@ -126,7 +234,7 @@ A Dataset Definition is a Ruby class that represents where data comes from.
 
 ```
 class EmployeeReport
-  include include Fios::Definitions::Base
+  include Fios::Definitions::Base
 
   def self.dataset_key
     :employee_report
@@ -225,6 +333,7 @@ This works correctly in:
 
 No eager loading required.
 
+
 ## Architecture Philosophy
 
 Fios is built around a few guiding principles:
@@ -234,6 +343,7 @@ Fios is built around a few guiding principles:
 * Adapters describe how data is fetched
 * Registration should be opt-in and predictable
 * Frameworks should clarify behavior, not hide it
+
 
 ## Why Fios Exists
 
@@ -291,9 +401,11 @@ Fios is built on a few core beliefs:
 
 If your analytics logic is becoming hard to reason about, Fios gives it a home.
 
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
 
 ## Code of Conduct
 
