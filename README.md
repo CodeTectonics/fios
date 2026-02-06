@@ -1,18 +1,21 @@
 # Fios
 
-Fios is a data analytics framework for Ruby on Rails applications.
+Fios is an opinionated analytics framework for Ruby on Rails applications.
 
-It provides a structured, explicit way to define datasets, adapters, charts, reports, and dashboards — making analytics code predictable, testable, and reusable.
+It provides a structured, explicit way to model analytics concerns — datasets, data sources, adapters, charts, reports, and dashboards — as first-class, persisted application concepts.
+
+The goal is not to make analytics “easy”, but to make analytics code **understandable, testable, and changeable** as applications and business questions evolve.
+
+By separating *what data exists*, *where it comes from*, and *how it is queried and presented*, Fios gives analytics logic a clear home outside controllers and one-off services, without tying it to a specific ORM, database, or frontend.
 
 
 ## Features
 
 - 📊 Persisted datasets with explicit metadata
 - 🔌 Adapters to control how data is fetched (ActiveRecord, SQL, APIs, etc.)
-- 📈 Chart builders for producing chart-ready data
-- 📑 Report builders for producing tabular data
-- 🧠 Registry-based architecture (no magic constants)
-- ⚙️ Rails generators to get started quickly
+- 📈 Chart and report builders that produce frontend-agnostic data
+- 🧠 Registry-based architecture (explicit, inspectable, no magic)
+- ⚙️ Rails generators to establish structure quickly
 - ♻️ Works with or without ActiveRecord models
 
 
@@ -385,7 +388,7 @@ Over time, analytics becomes:
 * difficult to extend
 * risky to change
 
-Fios exists to solve this problem by making analytics a first-class concern.
+Fios exists to solve this problem by making analytics a first-class, persisted concern.
 
 Instead of hiding complexity, Fios makes analytics code:
 * explicit
@@ -408,11 +411,24 @@ This separation:
 * keeps analytics logic out of controllers
 * encourages reuse instead of duplication
 
+### Practical Consequences of This Design
+
+Because analytics concepts in Fios are explicit and persisted, this enables capabilities that are difficult to achieve with ad-hoc analytics code:
+
+* Charts, reports, and dashboards can be seeded, versioned, or migrated between environments or even between applications, instead of being hard-coded.
+
+* Fios can act as a stable backend for custom chart, report, or dashboard builders, with configuration stored as data rather than Ruby code.
+
+* Developers can reference their own data sources — ActiveRecord models, POROs, database views, or external APIs — without changing how analytics are defined or consumed.
+
+These capabilities are a direct result of treating analytics as structured application data rather than incidental code.
+
 ### Who Fios Is For
 
 Fios is designed for teams that:
 * build internal tools or data-heavy applications
 * need dashboards and reports backed by real business logic
+* want to expose analytics configuration via admin UIs or builders
 * care about maintainability more than “quick charts”
 * want analytics code that survives beyond the first version
 
